@@ -1,0 +1,242 @@
+import os
+
+_materials = None
+_materials_path = os.path.join(os.path.dirname(__file__), 'Materials for RDTT.csv')
+
+def _init_material(mat_path):
+    global _materials 
+    _materials = {}
+    headers = ['material', 'rho', 'sigma_02', 'sigma_v', 'delta', 'sigma_v_rho', 'use']
+    with open(mat_path, encoding='utf-8')  as f:
+        f.readline()
+        for line in f.readlines():
+            values = line.split(';')
+            pd = {headers[0]: values[0]}
+            for h, val in zip(headers[1:-1], values[1:-1]):
+                pd[h] = float(val)
+            pd['use'] = values[-1][:-1]
+            _materials[values[0]] = pd
+
+def get_material(material):
+    """Возвращает словарь с параметрами материала с именем `material` из таблицы 1
+    лекции 3 раздаточного материала.
+
+    Аргументы
+    ---------
+        material : str
+            Название стали, титанового или аллюминиевого сплава. Список материалов
+            можно узнать, вызвав функцию `get_material_names()`.
+
+    Выходные параметры
+    ------------------
+        dict: словарь следующего вида
+            {
+                'material' : str
+                    Название материала.
+                'rho' : float
+                    Плотность материала, в кг/м^3.
+                'sigma_02' : float
+                    Предел текучести при растяжении, в МПа.
+                'sigma_v' : float
+                    Временное сопротивление при растяжении, в МПа.
+                'delta' : float
+                    Относительное удлинение, в %.
+                'sigma_v_rho' : float
+                    Удельная прочность, в км.
+                'use' : str
+                    Рекомендуемое применение.
+            }
+    """
+    if _materials is None:
+        _init_material(_materials_path)
+    if material not in _materials:
+        raise ValueError(f'Такого материала в таблице нет: {material}. Список доступных имен можно получить из функции get_material_names()')
+    return _materials[material]
+
+def get_material_names():
+    """Возвращает список материалов из таблицы 1 лекции 3 раздаточного материала.
+
+    Выходные параметры
+    ------------------
+        list: список материалов
+    """
+    if _materials is None:
+        _init_material(_materials_path)
+    return list(_materials.keys())
+
+_composites = None
+_composites_path = os.path.join(os.path.dirname(__file__), 'Composite.csv')
+
+def _init_composite(comp_path):
+    global _composites 
+    _composites = {}
+    headers = ['material', 'rho', 'sigma_r', 'E']
+    with open(comp_path, encoding='utf-8')  as f:
+        f.readline()
+        for line in f.readlines():
+            values = line.split(';')
+            pd = {headers[0]: values[0]}
+            for h, val in zip(headers[1:], values[1:]):
+                pd[h] = float(val)
+            _composites[values[0]] = pd
+
+def get_composite(composite):
+    """Возвращает словарь с параметрами композитов с именем `composite` из таблицы 2
+    лекции 3 раздаточного материала.
+
+    Аргументы
+    ---------
+        composite : str
+            Название композитного материала. Список материалов
+            можно узнать, вызвав функцию `get_composite_names()`.
+
+    Выходные параметры
+    ------------------
+        dict: словарь следующего вида
+            {
+                'material' : str
+                    Название композита.
+                'rho' : float
+                    Плотность материала, в кг/м^3.
+                'sigma_r' : float
+                    Прочность при растяжении, в МПа.
+                'E' : float
+                    Модуль упругости, в ГПа.
+            }
+    """
+    if _composites is None:
+        _init_composite(_composites_path)
+    if composite not in _composites:
+        raise ValueError(f'Такого композита в таблице нет: {composite}. Список доступных имен можно получить из функции get_composite_names()')
+    return _composites[composite]
+
+def get_composite_names():
+    """Возвращает список композитных материалов из таблицы 2 лекции 3 раздаточного материала.
+
+    Выходные параметры
+    ------------------
+        list: список композитов.
+    """
+    if _composites is None:
+        _init_composite(_composites_path)
+    return list(_composites.keys())
+
+_tzp = None
+_tzp_path = os.path.join(os.path.dirname(__file__), 'TZP.csv')
+
+def _init_tzp(tzp_path):
+    global _tzp
+    _tzp = {}
+    headers = ['material', 'rho', 'delta_razr', 'sigma_razr', 'lambda_t', 'c_p']
+    with open(tzp_path, encoding='utf-8')  as f:
+        f.readline()
+        for line in f.readlines():
+            values = line.split(';')
+            pd = {headers[0]: values[0]}
+            for h, val in zip(headers[1:], values[1:]):
+                pd[h] = float(val)
+            _tzp[values[0]] = pd
+
+def get_tzp(tzp):
+    """Возвращает словарь с параметрами ТЗП с именем `tzp` из таблицы 4
+    лекции 3 раздаточного материала.
+
+    Аргументы
+    ---------
+        tzp : str
+            Название ТЗП. Список ТЗП можно узнать, вызвав функцию `get_tzp_names()`.
+
+    Выходные параметры
+    ------------------
+        dict: словарь следующего вида
+            {
+                'material' : str
+                    Название ТЗП.
+                'rho' : float
+                    Плотность материала, в кг/м^3.
+                'delta_razr' : float
+                    Относительное удлинение при разрыве, в %.
+                'sigma_razr' : float
+                    Предел прочности при разрыве, в МПа.
+                'lambda_t' : float
+                    Коэффициент теплопроводности, в Вт/(м*К).
+                'c_p' : float
+                    Удельная теплоёмкость, в Дж/(кг*К).
+            }
+    """
+    if _composites is None:
+        _init_tzp(_tzp_path)
+    if tzp not in _tzp:
+        raise ValueError(f'Такого ТЗП в таблице нет: {tzp}. Список доступных имен можно получить из функции get_tzp_names()')
+    return _tzp[tzp]
+
+def get_tzp_names():
+    """Возвращает список ТЗП из таблицы 4 лекции 3 раздаточного материала.
+
+    Выходные параметры
+    ------------------
+        list: список ТЗП
+    """
+    if _tzp is None:
+        _init_tzp(_tzp_path)
+    return list(_tzp.keys())
+
+_mater_for_flan_and_shpan = None
+_mater_for_flan_and_shpan_path = os.path.join(os.path.dirname(__file__), 'Materials for flanec and shpangout.csv')
+
+def _init_flan_shpan_mater(mat_path):
+    global _mater_for_flan_and_shpan 
+    _mater_for_flan_and_shpan = {}
+    headers = ['material', 'rho', 'sigma_v', 'sigma_v_rho', 'use']
+    with open(mat_path, encoding='utf-8')  as f:
+        f.readline()
+        for line in f.readlines():
+            values = line.split(';')
+            pd = {headers[0]: values[0]}
+            for h, val in zip(headers[1:-1], values[1:-1]):
+                pd[h] = float(val)
+            pd['use'] = values[-1][:-1]
+            _mater_for_flan_and_shpan[values[0]] = pd
+
+def get_fln_shpn_mater(material):
+    """Возвращает словарь с параметрами материала для фланцев и шпангоутов с именем `material`
+    из таблицы 3 лекции 3 раздаточного материала.
+
+    Аргументы
+    ---------
+        material : str
+            Название материала. Список материалов
+            можно узнать, вызвав функцию `get_fln_shpn_mater_names()`.
+
+    Выходные параметры
+    ------------------
+        dict: словарь следующего вида
+            {
+                'material' : str
+                    Название материала.
+                'rho' : float
+                    Плотность материала, в кг/м^3.
+                'sigma_v' : float
+                    Временное сопротивление при растяжении, в МПа.
+                'sigma_v_rho' : float
+                    Удельная прочность, в км.
+                'use' : str
+                    Рекомендуемое применение.
+            }
+    """
+    if _mater_for_flan_and_shpan is None:
+        _init_flan_shpan_mater(_mater_for_flan_and_shpan_path)
+    if material not in _mater_for_flan_and_shpan:
+        raise ValueError(f'Такого материала для фланцев и шпангоутов в таблице нет: {material}. Список доступных имен можно получить из функции get_fln_shpn_mater_names()')
+    return _mater_for_flan_and_shpan[material]
+
+def get_fln_shpn_mater_names():
+    """Возвращает список материалов для фланцев и шпангоутов из таблицы 1 лекции 3 раздаточного материала.
+
+    Выходные параметры
+    ------------------
+        list: список материалов
+    """
+    if _mater_for_flan_and_shpan is None:
+        _init_flan_shpan_mater(_mater_for_flan_and_shpan_path)
+    return list(_mater_for_flan_and_shpan.keys())
