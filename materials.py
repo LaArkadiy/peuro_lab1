@@ -1,7 +1,7 @@
 import os
 
 _materials = None
-_materials_path = os.path.join(os.path.dirname(__file__), 'Materials for RDTT.csv')
+_materials_path = os.path.join(os.path.dirname(__file__), 'materials\Materials for RDTT.csv')
 
 def _init_material(mat_path):
     global _materials 
@@ -65,7 +65,7 @@ def get_material_names():
     return list(_materials.keys())
 
 _composites = None
-_composites_path = os.path.join(os.path.dirname(__file__), 'Composite.csv')
+_composites_path = os.path.join(os.path.dirname(__file__), 'materials\Composite.csv')
 
 def _init_composite(comp_path):
     global _composites 
@@ -122,7 +122,7 @@ def get_composite_names():
     return list(_composites.keys())
 
 _tzp = None
-_tzp_path = os.path.join(os.path.dirname(__file__), 'TZP.csv')
+_tzp_path = os.path.join(os.path.dirname(__file__), 'materials\TZP.csv')
 
 def _init_tzp(tzp_path):
     global _tzp
@@ -182,7 +182,7 @@ def get_tzp_names():
     return list(_tzp.keys())
 
 _mater_for_flan_and_shpan = None
-_mater_for_flan_and_shpan_path = os.path.join(os.path.dirname(__file__), 'Materials for flanec and shpangout.csv')
+_mater_for_flan_and_shpan_path = os.path.join(os.path.dirname(__file__), 'materials\Materials for flanec and shpangout.csv')
 
 def _init_flan_shpan_mater(mat_path):
     global _mater_for_flan_and_shpan 
