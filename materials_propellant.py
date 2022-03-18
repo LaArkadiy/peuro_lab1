@@ -240,3 +240,73 @@ def get_fln_shpn_mater_names():
     if _mater_for_flan_and_shpan is None:
         _init_flan_shpan_mater(_mater_for_flan_and_shpan_path)
     return list(_mater_for_flan_and_shpan.keys())
+
+# Propellant
+
+# Mixed propellant
+_mixed_propellant = None
+_mixed_propellant_path = os.path.join(os.path.dirname(__file__), 'propellant\Mixed propellant.csv')
+
+def _init_mixed_propellant(mat_path):
+    global _mixed_propellant 
+    _mixed_propellant = {}
+    headers = ['Propellant', 'Number', 'I_ud', 'rho_т', 'R_г', 'k', 'T_0', 'nu', 'u_1', 'p_min']
+    with open(mat_path, encoding='utf-8')  as f:
+        f.readline()
+        for line in f.readlines():
+            values = line.split(';')
+            pd = {headers[0]: values[0]}
+            pd = {headers[1]: values[1]}
+            for h, val in zip(headers[2:], values[2:]):
+                pd[h] = float(val)
+            _mixed_propellant[values[0]] = pd
+            
+
+def get_mixed_propellant(mixed_propellant):
+    """Возвращает словарь с параметрами топлива из таблицы О.С. Серпинского.
+
+    Аргументы
+    ---------
+        Propellant : str
+            Название топлива, список топлив можно узнать, вызвыв функцию `get_mixed_propellant_names()`.
+
+    Выходные параметры
+    ------------------
+        dict: словарь следующего вида
+            {
+                'Number' : float
+                    Порядковый номер топлива.
+                'I_ud' : float
+                    Удельный импульс топлива, в м/с.
+                'rho_т' : float
+                    Плотность топлива, в кг/м^3.
+                'R_г' : float
+                    Газовая постоянная продуктов сгорания, в Дж/кг*К.
+                'k' : float
+                    Показатель адиабаты продуктов сгорания.
+                'T_0' : float
+                    Температура торможения продуктов сгорания, в К.
+                'nu' : float
+                    Показатель степени в законе горения.
+                'u_1' : float
+                    Единичная скорость горения, в м/с * МПа.
+                'p_min' : float
+                    Минимальное давление для устойчивого горения смесевого топлива, в Па.
+            }
+    """
+    if _mixed_propellant is None:
+        _init_mixed_propellant(_mixed_propellant_path)
+    if mixed_propellant not in _mixed_propellant:
+        raise ValueError(f'Такого материала в таблице нет: {mixed_propellant}. Список доступных имен можно получить из функции get_material_names()')
+    return _mixed_propellant[mixed_propellant]
+
+def get_mixed_propellant_names():
+    """Возвращает список материалов из таблицы 1 лекции 3 раздаточного материала.
+
+    Выходные параметры
+    ------------------
+        list: список материалов
+    """
+    if _mixed_propellant is None:
+        _init_mixed_propellant(_mixed_propellant_path)
+    return list(_mixed_propellant.keys())
