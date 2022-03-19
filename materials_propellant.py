@@ -268,7 +268,7 @@ def get_mixed_propellant(mixed_propellant):
     Аргументы
     ---------
         Propellant : str
-            Название топлива, список топлив можно узнать, вызвыв функцию `get_mixed_propellant_names()`.
+            Название топлива, список топлив можно узнать, вызвав функцию `get_mixed_propellant_names()`.
 
     Выходные параметры
     ------------------
@@ -297,15 +297,15 @@ def get_mixed_propellant(mixed_propellant):
     if _mixed_propellant is None:
         _init_mixed_propellant(_mixed_propellant_path)
     if mixed_propellant not in _mixed_propellant:
-        raise ValueError(f'Такого материала в таблице нет: {mixed_propellant}. Список доступных имен можно получить из функции get_material_names()')
+        raise ValueError(f'Такого топлива в таблице нет: {mixed_propellant}. Список доступных имен можно получить из функции get_mixed_propellant_names()')
     return _mixed_propellant[mixed_propellant]
 
 def get_mixed_propellant_names():
-    """Возвращает список материалов из таблицы 1 лекции 3 раздаточного материала.
+    """Возвращает список смесевых топлив из таблицы О.С. Серпинского.
 
     Выходные параметры
     ------------------
-        list: список материалов
+        list: список топлив
     """
     if _mixed_propellant is None:
         _init_mixed_propellant(_mixed_propellant_path)
