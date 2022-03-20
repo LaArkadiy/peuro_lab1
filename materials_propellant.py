@@ -310,3 +310,75 @@ def get_mixed_propellant_names():
     if _mixed_propellant is None:
         _init_mixed_propellant(_mixed_propellant_path)
     return list(_mixed_propellant.keys())
+
+# Ballistic propellant
+_ball_propellant = None
+_ball_propellant_path = os.path.join(os.path.dirname(__file__), 'propellant\Bal propellant.csv')
+
+def _init_ball_propellant(mat_path):
+    global _ball_propellant 
+    _ball_propellant = {}
+    headers = ['Propellant', 'I_ud', 'rho_т', 'R_г', 'k', 'T_0', 'nu', 'u_1', 'B_т', 'Q', 'p_min']
+    with open(mat_path, encoding='utf-8')  as f:
+        f.readline()
+        for line in f.readlines():
+            values = line.split(';')
+            pd = {headers[0]: values[0]}
+            pd = {headers[1]: values[1]}
+            for h, val in zip(headers[2:], values[2:]):
+                pd[h] = float(val)
+            _ball_propellant[values[0]] = pd
+            
+
+def get_ball_propellant(ball_propellant):
+    """Возвращает словарь с параметрами топлива из таблицы О.С. Серпинского.
+
+    Аргументы
+    ---------
+        Propellant : str
+            Название топлива, список топлив можно узнать, вызвав функцию `get_mixed_propellant_names()`.
+
+    Выходные параметры
+    ------------------
+        dict: словарь следующего вида
+            {
+                'Number' : float
+                    Порядковый номер топлива.
+                'I_ud' : float
+                    Удельный импульс топлива, в м/с.
+                'rho_т' : float
+                    Плотность топлива, в кг/м^3.
+                'R_г' : float
+                    Газовая постоянная продуктов сгорания, в Дж/кг*К.
+                'k' : float
+                    Показатель адиабаты продуктов сгорания.
+                'T_0' : float
+                    Температура торможения продуктов сгорания, в К.
+                'nu' : float
+                    Показатель степени в законе горения.
+                'u_1' : float
+                    Единичная скорость горения, в м/с * МПа.
+                'B_т': float
+                    Коэффициент для температурной зависимости, в К.
+                'Q': float
+                    Калорийность топлива, в МДж/кг.
+                'p_min' : float
+                    Минимальное давление для устойчивого горения смесевого топлива, в Па.
+            }
+    """
+    if _ball_propellant is None:
+        _init_ball_propellant(_ball_propellant_path)
+    if ball_propellant not in _ball_propellant:
+        raise ValueError(f'Такого топлива в таблице нет: {mixed_propellant}. Список доступных имен можно получить из функции get_mixed_propellant_names()')
+    return _ball_propellant[ball_propellant]
+
+def get_ball_propellant_names():
+    """Возвращает список смесевых топлив из таблицы О.С. Серпинского.
+
+    Выходные параметры
+    ------------------
+        list: список топлив
+    """
+    if _ball_propellant is None:
+        _init_ball_propellant(_ball_propellant_path)
+    return list(_ball_propellant.keys())
