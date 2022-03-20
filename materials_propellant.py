@@ -231,7 +231,7 @@ def get_fln_shpn_mater(material):
     return _mater_for_flan_and_shpan[material]
 
 def get_fln_shpn_mater_names():
-    """Возвращает список материалов для фланцев и шпангоутов из таблицы 1 лекции 3 раздаточного материала.
+    """Возвращает список материалов для фланцев и шпангоутов из таблицы 3 лекции 3 раздаточного материала.
 
     Выходные параметры
     ------------------
@@ -250,7 +250,7 @@ _mixed_propellant_path = os.path.join(os.path.dirname(__file__), 'propellant\Mix
 def _init_mixed_propellant(mat_path):
     global _mixed_propellant 
     _mixed_propellant = {}
-    headers = ['Propellant', 'Number', 'I_ud', 'rho_т', 'R_г', 'k', 'T_0', 'nu', 'u_1', 'p_min']
+    headers = ['Propellant', 'Number', 'I_ud', 'rho_т', 'R_г', 'k', 'T_0', 'nu', 'u_1', 'D_t', 'p_min']
     with open(mat_path, encoding='utf-8')  as f:
         f.readline()
         for line in f.readlines():
@@ -267,7 +267,7 @@ def get_mixed_propellant(mixed_propellant):
 
     Аргументы
     ---------
-        Propellant : str
+        mixed_propellant : str
             Название топлива, список топлив можно узнать, вызвав функцию `get_mixed_propellant_names()`.
 
     Выходные параметры
@@ -290,6 +290,8 @@ def get_mixed_propellant(mixed_propellant):
                     Показатель степени в законе горения.
                 'u_1' : float
                     Единичная скорость горения, в м/с * МПа.
+                'D_t' : float
+                    Коэффициент для температурной зависимости, в 1/К.
                 'p_min' : float
                     Минимальное давление для устойчивого горения смесевого топлива, в Па.
             }
@@ -318,25 +320,27 @@ _ball_propellant_path = os.path.join(os.path.dirname(__file__), 'propellant\Bal 
 def _init_ball_propellant(mat_path):
     global _ball_propellant 
     _ball_propellant = {}
-    headers = ['Propellant', 'I_ud', 'rho_т', 'R_г', 'k', 'T_0', 'nu', 'u_1', 'B_т', 'Q', 'p_min']
+    headers = ['Number', 'I_ud', 'rho_т', 'R_г', 'k', 'T_0', 'nu', 'u_1', 'B_т', 'Q', 'p_min']
     with open(mat_path, encoding='utf-8')  as f:
         f.readline()
         for line in f.readlines():
             values = line.split(';')
-            pd = {headers[0]: values[0]}
-            pd = {headers[1]: values[1]}
+            pd = {
+                headers[0]: values[0],
+                headers[1]: values[1]
+                }
             for h, val in zip(headers[2:], values[2:]):
                 pd[h] = float(val)
             _ball_propellant[values[0]] = pd
             
 
-def get_ball_propellant(ball_propellant):
-    """Возвращает словарь с параметрами топлива из таблицы О.С. Серпинского.
+def get_ball_propellant(propellant_number):
+    """Возвращает словарь с параметрами топлива из банка баллиститных топлив.
 
     Аргументы
     ---------
-        Propellant : str
-            Название топлива, список топлив можно узнать, вызвав функцию `get_mixed_propellant_names()`.
+        propellant_number : str
+            Порядковый номер топлива из таблицы, список топлив можно узнать, вызвав функцию `get_ball_propellant_names()`.
 
     Выходные параметры
     ------------------
@@ -363,17 +367,17 @@ def get_ball_propellant(ball_propellant):
                 'Q': float
                     Калорийность топлива, в МДж/кг.
                 'p_min' : float
-                    Минимальное давление для устойчивого горения смесевого топлива, в Па.
+                    Минимальное давление для устойчивого горения топлива, в Па.
             }
     """
     if _ball_propellant is None:
         _init_ball_propellant(_ball_propellant_path)
-    if ball_propellant not in _ball_propellant:
-        raise ValueError(f'Такого топлива в таблице нет: {mixed_propellant}. Список доступных имен можно получить из функции get_mixed_propellant_names()')
-    return _ball_propellant[ball_propellant]
+    if propellant_number not in _ball_propellant:
+        raise ValueError(f'Такого номера топлива в таблице нет: {propellant_number}. Список доступных имен можно получить из функции get_ball_propellant_names()')
+    return _ball_propellant[propellant_number]
 
 def get_ball_propellant_names():
-    """Возвращает список смесевых топлив из таблицы О.С. Серпинского.
+    """Возвращает список топлив из банка баллиститных топлив.
 
     Выходные параметры
     ------------------
